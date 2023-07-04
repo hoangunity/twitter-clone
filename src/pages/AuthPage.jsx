@@ -6,13 +6,15 @@ import Form from "react-bootstrap/Form";
 import Modal from "react-bootstrap/Modal";
 
 import axios from "axios";
-import { useState } from "react";
 import useLocalStorage from "use-local-storage";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function AuthPage() {
   const loginImage = "https://sig1.co/img-twitter-1";
   const url =
     "https://auth-back-end-hoangunity.sigma-school-full-stack.repl.co";
+  const navigate = useNavigate();
 
   // Possible values: null (no modal shows), "Login", "SignUp"
   const [modalShow, setModalShow] = useState(null);
@@ -22,6 +24,12 @@ function AuthPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [authToken, setAuthToken] = useLocalStorage("authToken", "");
+
+  useEffect(() => {
+    if (authToken) {
+      navigate("/profile");
+    }
+  }, [authToken, navigate]);
 
   const handleSignUp = async (e) => {
     e.preventDefault();
