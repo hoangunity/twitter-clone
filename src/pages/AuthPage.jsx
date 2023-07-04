@@ -40,7 +40,7 @@ function AuthPage() {
       });
       console.log(response.data);
     } catch (err) {
-      console.error(err);
+      console.log(err.response.data);
     }
   };
 
