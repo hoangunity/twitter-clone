@@ -4,8 +4,10 @@ import Row from "react-bootstrap/Row";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Modal from "react-bootstrap/Modal";
+
 import axios from "axios";
 import { useState } from "react";
+import useLocalStorage from "use-local-storage";
 
 function AuthPage() {
   const loginImage = "https://sig1.co/img-twitter-1";
@@ -19,6 +21,7 @@ function AuthPage() {
   const handleClose = () => setModalShow(null);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [authToken, setAuthToken] = useLocalStorage("authToken", "");
 
   const handleSignUp = async (e) => {
     e.preventDefault();
@@ -40,7 +43,10 @@ function AuthPage() {
         username,
         password,
       });
-      console.log(response.data);
+      if (response.data && response.data.auth === true && response.data.token) {
+        setAuthToken(response.data.token); // Save token to localStorage
+        console.log("Login was successfully, token saved");
+      }
     } catch (err) {
       console.error(err);
     }
