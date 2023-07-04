@@ -11,9 +11,12 @@ function AuthPage() {
   const loginImage = "https://sig1.co/img-twitter-1";
   const url =
     "https://auth-back-end-hoangunity.sigma-school-full-stack.repl.co";
-  const [show, setShow] = useState(false);
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+
+  // Possible values: null (no modal shows), "Login", "SignUp"
+  const [modalShow, setModalShow] = useState(null);
+  const handleShowSignUp = () => setModalShow("SignUp");
+  const handleShowLogin = () => setModalShow("Login");
+  const handleClose = () => setModalShow(null);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
@@ -21,6 +24,19 @@ function AuthPage() {
     e.preventDefault();
     try {
       const response = await axios.post(`${url}/signup`, {
+        username,
+        password,
+      });
+      console.log(response.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post(`${url}/login`, {
         username,
         password,
       });
@@ -55,7 +71,7 @@ function AuthPage() {
             <i className="bi bi-apple"></i> Sign up with Apple
           </Button>
           <p style={{ textAlign: "center" }}>or</p>
-          <Button className="rounded-pill" onClick={handleShow}>
+          <Button className="rounded-pill" onClick={handleShowSignUp}>
             Create an account
           </Button>
           <p style={{ fontSize: "12px" }}>
@@ -66,19 +82,33 @@ function AuthPage() {
           <p className="mt-5" style={{ fontWeight: "bold" }}>
             Already have an account?
           </p>
-          <Button className="rounded-pill" variant="outline-primary">
+          <Button
+            className="rounded-pill"
+            variant="outline-primary"
+            onClick={handleShowLogin}
+          >
             Sign in
           </Button>
         </Col>
       </Col>
 
       {/* Sign up Modal */}
-      <Modal show={show} onHide={handleClose} centered>
+      <Modal
+        show={modalShow !== null}
+        onHide={handleClose}
+        animation={false}
+        centered
+      >
         <Modal.Body className="d-grid gap-2 px-5">
           <h2 className="mb-4" style={{ fontWeight: "bold" }}>
-            Create your account
+            {modalShow === "SignUp"
+              ? "Create your account"
+              : "Log in to your account"}
           </h2>
-          <Form className="d-grid gap-2 px-5" onSubmit={handleSignUp}>
+          <Form
+            className="d-grid gap-2 px-5"
+            onSubmit={modalShow === "SignUp" ? handleSignUp : handleLogin}
+          >
             <Form.Group className="mb-3" controlId="formBasicEmail">
               <Form.Control
                 onChange={(e) => setUsername(e.target.value)}
@@ -107,7 +137,7 @@ function AuthPage() {
             </p>
 
             <Button className="rounded-pill" type="submit">
-              Sign up
+              {modalShow === "SignUp" ? "Sign up" : "Log in"}
             </Button>
           </Form>
         </Modal.Body>
