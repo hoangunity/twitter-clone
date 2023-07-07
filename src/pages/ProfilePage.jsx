@@ -1,6 +1,7 @@
 import Container from "react-bootstrap/Container";
-import Navbar from "react-bootstrap/Navbar";
-import Button from "react-bootstrap/Button";
+import Row from "react-bootstrap/Row";
+import ProfileSideBar from "../components/ProfileSideBar";
+import ProfileMidBody from "../components/ProfileMidBody";
 
 import useLocalStorage from "use-local-storage";
 import { useNavigate } from "react-router-dom";
@@ -23,24 +24,11 @@ function ProfilePage() {
 
   return (
     <>
-      <Navbar bg="light">
-        <Container>
-          <Navbar.Brand href="/">
-            <i
-              className="bi bi-twitter"
-              style={{ fontSize: 30, color: "dodgerblue" }}
-            ></i>
-          </Navbar.Brand>
-          <Navbar.Collapse className="justify-content-end">
-            <Button variant="primary" onClick={handleLogout}>
-              Logout
-            </Button>
-          </Navbar.Collapse>
-        </Container>
-      </Navbar>
-
-      <Container className="mt-3">
-        <h2>Your Profile</h2>
+      <Container>
+        <Row>
+          <ProfileSideBar handleLogout={handleLogout} />
+          <ProfileMidBody />
+        </Row>
       </Container>
     </>
   );
