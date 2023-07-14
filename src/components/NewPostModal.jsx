@@ -2,18 +2,27 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Modal from "react-bootstrap/Modal";
 
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { AuthContext } from "./AuthProvider";
 import { useDispatch } from "react-redux";
 import { savePost } from "../features/posts/postsSlice";
 
 function NewPostModal({ show, handleClose }) {
-  const dispatch = useDispatch();
   const [postContent, setPostContent] = useState("");
+  const [file, setFile] = useState(null);
+  const dispatch = useDispatch();
+  const { currentUser } = useContext(AuthContext);
+  const userId = currentUser.uid;
 
   const handleSave = () => {
-    dispatch(savePost(postContent));
+    dispatch(savePost({ userId, postContent, file }));
     handleClose();
     setPostContent("");
+    setFile(null);
+  };
+
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
   };
 
   return (
@@ -29,6 +38,8 @@ function NewPostModal({ show, handleClose }) {
                 rows={3}
                 onChange={(e) => setPostContent(e.target.value)}
               />
+              <br />
+              <Form.Control type="file" onChange={handleFileChange} />
             </Form.Group>
           </Form>
         </Modal.Body>

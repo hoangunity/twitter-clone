@@ -1,46 +1,44 @@
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Image from "react-bootstrap/Image";
-import Row from "react-bootstrap/Row";
 import Nav from "react-bootstrap/Nav";
+import Row from "react-bootstrap/Row";
 import Spinner from "react-bootstrap/Spinner";
-import ProfilePostCard from "./ProfilePostCard";
 
-import jwtDecode from "jwt-decode";
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchPostsByUser } from "../features/posts/postsSlice";
+import ProfilePostCard from "./ProfilePostCard";
+import { AuthContext } from "./AuthProvider";
 
-function ProfileMidBody() {
+export default function ProfileMidBody() {
   const url =
     "https://pbs.twimg.com/profile_banners/83072625/1602845571/1500x500";
   const pic =
-    "https://pbs.twimg.com/profile_images/1587405892437221376/h167Jlb2_400x400.jpg";
+    "https://scontent-hkg4-1.xx.fbcdn.net/v/t39.30808-6/317614510_6170451546316789_2356960875719193820_n.jpg?_nc_cat=103&cb=99be929b-3346023f&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=7O5HbPnKnPoAX_Wg7a9&_nc_oc=AQmiVzuOj3hNmOPtvCm9PwQQ_KrEVRXa5zxmQ79fR2X7L1k2p8wmiCfjbWQFGERI9vyh0Q8eRfLaS4zuZdRL2r9c&_nc_ht=scontent-hkg4-1.xx&oh=00_AfAudrpMTpyrnfg2zpwRCOARbCY4JA_kXYU1NVvDhZgipg&oe=64B34A61";
+
   const dispatch = useDispatch();
-  const { posts, loading } = useSelector((state) => state.posts);
+  const posts = useSelector((state) => state.posts.posts);
+  const loading = useSelector((state) => state.posts.loading);
+  const { currentUser } = useContext(AuthContext);
 
   useEffect(() => {
-    const token = localStorage.getItem("authToken");
-    if (token) {
-      const decodedToken = jwtDecode(token);
-      const userId = decodedToken.id;
-      dispatch(fetchPostsByUser(userId));
-    }
-  }, [dispatch]);
-
+    dispatch(fetchPostsByUser(currentUser.uid));
+  }, [dispatch, currentUser]);
   return (
-    <Col sm={6} className="bg-light" style={{ border: "1px solid lightgray" }}>
+    <Col sm={6} className="bg-light" style={{ border: "1px solid lightgrey" }}>
       <Image src={url} fluid />
       <br />
+
       <Image
         src={pic}
         roundedCircle
         style={{
-          width: 150,
           position: "absolute",
           top: "140px",
-          border: "4px solid #F8F9FA",
           marginLeft: 15,
+          width: 150,
+          border: "4px solid #F8F9FA",
         }}
       />
       <Row className="justify-content-end">
@@ -50,50 +48,41 @@ function ProfileMidBody() {
           </Button>
         </Col>
       </Row>
-
       <p
         className="mt-5"
         style={{ margin: 0, fontWeight: "bold", fontSize: "15px" }}
       >
-        Hoangunity
+        Haris
       </p>
-      <p style={{ marginBottom: "2px" }}>@hoangunity</p>
-      <p>I love programming</p>
-      <p>A humble person</p>
+      <p style={{ marginBottom: "2px" }}>@haris.samingan</p>
+      <p>I help people</p>
+      <p>Entrepreneur</p>
       <p>
-        <strong>100</strong> Following <strong>10</strong> Followers
+        <strong>271</strong> Following <strong>610</strong> Followers
       </p>
-
       <Nav variant="underline" defaultActiveKey="/home" justify>
         <Nav.Item>
           <Nav.Link eventKey="/home">Tweets</Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link eventKey="/link-1">Replies</Nav.Link>
+          <Nav.Link eventKey="replies">Replies</Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link eventKey="/link-2">Highlights</Nav.Link>
+          <Nav.Link eventKey="highlights">Highlights</Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link eventKey="/link-3">Media</Nav.Link>
+          <Nav.Link eventKey="media">Media</Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link eventKey="/link-4">Likes</Nav.Link>
+          <Nav.Link eventKey="likes">Likes</Nav.Link>
         </Nav.Item>
       </Nav>
       {loading && (
         <Spinner animation="border" className="ms-3 mt-3" variant="primary" />
       )}
-
       {posts.map((post) => (
-        <ProfilePostCard
-          key={post.id}
-          content={post.content}
-          postId={post.id}
-        />
+        <ProfilePostCard key={post.id} post={post} />
       ))}
     </Col>
   );
 }
-
-export default ProfileMidBody;

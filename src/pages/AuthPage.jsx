@@ -4,17 +4,20 @@ import Row from "react-bootstrap/Row";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Modal from "react-bootstrap/Modal";
-
-import axios from "axios";
-import useLocalStorage from "use-local-storage";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  createUserWithEmailAndPassword,
+  getAuth,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+import { AuthContext } from "../components/AuthProvider";
 
 function AuthPage() {
   const loginImage = "https://sig1.co/img-twitter-1";
-  const url =
-    "https://auth-back-end-hoangunity.sigma-school-full-stack.repl.co";
   const navigate = useNavigate();
+  const auth = getAuth();
+  const { currentUser } = useContext(AuthContext);
 
   // Possible values: null (no modal shows), "Login", "SignUp"
   const [modalShow, setModalShow] = useState(null);
@@ -23,38 +26,29 @@ function AuthPage() {
   const handleClose = () => setModalShow(null);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [authToken, setAuthToken] = useLocalStorage("authToken", "");
 
   useEffect(() => {
-    if (authToken) {
-      navigate("/profile");
-    }
-  }, [authToken, navigate]);
+    if (currentUser) navigate("/profile");
+  }, [currentUser, navigate]);
 
   const handleSignUp = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`${url}/signup`, {
+      const res = await createUserWithEmailAndPassword(
+        auth,
         username,
-        password,
-      });
-      console.log(response.data);
+        password
+      );
+      console.log(res.user);
     } catch (err) {
-      console.log(err.response.data);
+      console.error(err);
     }
   };
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`${url}/login`, {
-        username,
-        password,
-      });
-      if (response.data && response.data.auth === true && response.data.token) {
-        setAuthToken(response.data.token); // Save token to localStorage
-        console.log("Login was successfully, token saved");
-      }
+      await signInWithEmailAndPassword(auth, username, password);
     } catch (err) {
       console.error(err);
     }
